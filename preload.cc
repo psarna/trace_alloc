@@ -19,16 +19,19 @@
 
 static struct stats {
     uint64_t mallocs;
+    uint64_t reallocs;
     uint64_t frees;
 } _stats;
 
 void __attribute__((destructor)) print_stats() {
     std::cout << "Mallocs: " << _stats.mallocs << std::endl
+              << "Reallocs: " << _stats.reallocs << std::endl
               << "Frees: " << _stats.frees << std::endl
     ;
 }
 
 static void* (*real_malloc)(size_t) = nullptr;
+static void* (*real_realloc)(void*, size_t) = nullptr;
 static void (*real_free)(void*) = nullptr;
 
 void *malloc(size_t size)
@@ -37,6 +40,13 @@ void *malloc(size_t size)
 
     _stats.mallocs++;
     return real_malloc(size);
+}
+
+void *realloc(void* addr, size_t size) {
+    TRY_PRELOAD(realloc);
+
+    _stats.reallocs++;
+    return real_realloc(addr, size);
 }
 
 void free(void* addr) {
