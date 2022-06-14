@@ -2,6 +2,5 @@
 
 Usage:
 ```
-make
-LD_PRELOAD=./preload.so /path/to/a/binary/you/wish/to/inspect
+./instrument.sh /path/to/a/binary/you/wish/to/inspect
 ```
